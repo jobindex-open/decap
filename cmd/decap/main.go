@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jobindex/decap"
+	"github.com/jobindex-open/decap"
 )
 
 const (

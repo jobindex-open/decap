@@ -1,4 +1,4 @@
-module github.com/jobindex/decap
+module github.com/jobindex-open/decap
 
 go 1.22
 
