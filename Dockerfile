@@ -1,5 +1,5 @@
 # use golang to build
-FROM golang:1.22-bullseye as golang
+FROM golang:1.25-bookworm as golang
 
 WORKDIR /app
 
@@ -10,6 +10,7 @@ RUN go mod download
 # copy sause
 COPY *.go ./
 COPY cmd ./cmd
+COPY readability ./readability
 
 # build
 RUN go build ./cmd/...

@@ -265,8 +265,10 @@ func (r *Request) parseQueryBlocks() error {
 			msg := `query[0].actions must contain at least one other action besides "navigate"`
 			return fmt.Errorf(msg)
 		}
+	case "load_html":
+		break
 	default:
-		return fmt.Errorf(`query[0].actions[0] must begin with either "load_tab" or "navigate"`)
+		return fmt.Errorf(`query[0].actions[0] must begin with either "load", "load_tab" or "navigate"`)
 	}
 
 	if r.hasListeningEvents() {
@@ -508,6 +510,18 @@ func (r *Request) parseAction(xa Action) error {
 			}
 		}
 		r.appendActions(chromedp.Sleep(delay))
+
+	case "load_html":
+		if err = xa.MustArgCount(1); err != nil {
+			return err
+		}
+		r.appendActions(load_html(xa.Arg(1)))
+
+	case "extract_main_content":
+		if err = xa.MustArgCount(1); err != nil {
+			return err
+		}
+		r.appendActions(extract_main_content(xa.Arg(1), &r.res.Out[r.pos]))
 
 	default:
 		return fmt.Errorf("unknown action name \"%s\"", xa.Name())

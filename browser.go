@@ -2,8 +2,10 @@ package decap
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -13,6 +15,7 @@ import (
 	"github.com/chromedp/cdproto/dom"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
+	"github.com/jobindex-open/decap/readability"
 )
 
 var (
@@ -332,6 +335,49 @@ func screenshot(args map[string]string, buf *[]byte) chromedp.ActionFunc {
 func scrollToBottom() chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		return chromedp.Evaluate(scrollCmd, nil).Do(ctx)
+	}
+}
+
+func load_html(html string) chromedp.ActionFunc {
+	return func(ctx context.Context) error {
+		_, _, _, err := page.Navigate("about:blank").Do(ctx)
+		if err != nil {
+			return err
+		}
+
+		tree, err := page.GetFrameTree().Do(ctx)
+		if err != nil {
+			return err
+		}
+		return page.SetDocumentContent(tree.Frame.ID, html).Do(ctx)
+	}
+}
+
+func extract_main_content(base_url string, out *[]string) chromedp.ActionFunc {
+	return func(ctx context.Context) error {
+		node, err := dom.GetDocument().Do(ctx)
+		if err != nil {
+			return err
+		}
+		html, err := dom.GetOuterHTML().WithNodeID(node.NodeID).Do(ctx)
+		if err != nil {
+			return err
+		}
+		var parsed *url.URL
+		parsed, err = url.Parse(base_url)
+		if err != nil {
+			return err
+		}
+		jsonObj, err := readability.DistillHTML(html, parsed)
+		if err != nil {
+			return err
+		}
+		jsonBytes, err := json.Marshal(jsonObj)
+		if err != nil {
+			return err
+		}
+		*out = append(*out, string(jsonBytes))
+		return err
 	}
 }
 
