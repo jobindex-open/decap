@@ -15,7 +15,7 @@ COPY cmd ./cmd
 RUN go build ./cmd/...
 
 # use chrome headless for deployment image
-FROM chromedp/headless-shell:125.0.6422.60
+FROM chromedp/headless-shell:144.0.7559.60
 
 COPY --from=golang /app/decap /usr/local/bin/decap
 
