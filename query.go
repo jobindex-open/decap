@@ -242,7 +242,14 @@ func (r *Request) parseQueryBlocks() error {
 	if len(r.Query[0].Actions) < 1 {
 		return fmt.Errorf("query[0].actions must contain at least one action")
 	}
-	switch r.Query[0].Actions[0].Name() {
+	switch name := r.Query[0].Actions[0].Name(); name {
+	case "load_html", "navigate":
+		if len(r.Query[0].Actions) < 2 {
+			return fmt.Errorf(
+				`query[0].actions must contain at least one other action besides "%s"`,
+				name,
+			)
+		}
 	case "load_tab":
 		r.oldTabID = r.Query[0].Actions[0].Arg(1)
 		r.Query[0].Actions = r.Query[0].Actions[1:]
@@ -260,13 +267,8 @@ func (r *Request) parseQueryBlocks() error {
 		default:
 			return fmt.Errorf("tab %s is not part of window session %s", r.oldTabID, r.SessionID)
 		}
-	case "navigate":
-		if len(r.Query[0].Actions) < 2 {
-			const msg = `query[0].actions must contain at least one other action besides "navigate"`
-			return fmt.Errorf(msg)
-		}
 	default:
-		return fmt.Errorf(`query[0].actions[0] must begin with either "load_tab" or "navigate"`)
+		return fmt.Errorf(`query[0].actions[0] must begin with either "load_html", "load_tab" or "navigate"`)
 	}
 
 	if r.hasListeningEvents() {
@@ -403,6 +405,11 @@ func (r *Request) parseAction(xa Action) error {
 		}
 		r.appendActions(listen(&r.SessionID, events...))
 
+	case "load_html":
+		if err = xa.MustArgCount(1); err != nil {
+			return fmt.Errorf("load_html: expected a single (HTML) argument")
+		}
+		r.appendActions(loadHTML(xa.Arg(1)))
 	case "load_tab":
 		if err = xa.MustArgCount(1); err != nil {
 			return err

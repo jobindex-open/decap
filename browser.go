@@ -262,6 +262,21 @@ func hideElements(sel string) chromedp.ActionFunc {
 	}
 }
 
+func loadHTML(html string) chromedp.ActionFunc {
+	return func(ctx context.Context) error {
+		_, _, _, _, err := page.Navigate("about:blank").Do(ctx)
+		if err != nil {
+			return err
+		}
+
+		tree, err := page.GetFrameTree().Do(ctx)
+		if err != nil {
+			return err
+		}
+		return page.SetDocumentContent(tree.Frame.ID, html).Do(ctx)
+	}
+}
+
 func navigate(url string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
 		_, _, _, _, err := page.Navigate(url).Do(ctx)
