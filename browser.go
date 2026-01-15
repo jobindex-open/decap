@@ -264,7 +264,7 @@ func hideElements(sel string) chromedp.ActionFunc {
 
 func navigate(url string) chromedp.ActionFunc {
 	return func(ctx context.Context) error {
-		_, _, _, err := page.Navigate(url).Do(ctx)
+		_, _, _, _, err := page.Navigate(url).Do(ctx)
 		return err
 	}
 }
