@@ -262,7 +262,7 @@ func (r *Request) parseQueryBlocks() error {
 		}
 	case "navigate":
 		if len(r.Query[0].Actions) < 2 {
-			msg := `query[0].actions must contain at least one other action besides "navigate"`
+			const msg = `query[0].actions must contain at least one other action besides "navigate"`
 			return fmt.Errorf(msg)
 		}
 	default:
