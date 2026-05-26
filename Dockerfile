@@ -1,5 +1,5 @@
 # use golang to build
-FROM golang:1.25-trixie as golang
+FROM golang:1.26-trixie as golang
 
 WORKDIR /app
 
