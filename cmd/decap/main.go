@@ -107,8 +107,7 @@ func recapHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	var res *recap.Result
-	// TODO: Execute Readability parsing here
-	err = nil
+	res, err = rec.Execute(debugMode)
 	if err != nil {
 		msg := fmt.Sprintf("%s: %s", http.StatusText(http.StatusInternalServerError), err)
 		http.Error(w, msg, http.StatusInternalServerError)
