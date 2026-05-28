@@ -11,11 +11,13 @@ import (
 	"time"
 
 	"github.com/jobindex-open/decap"
+	"github.com/jobindex-open/decap/recap"
 )
 
 const (
 	browsePath    = "/api/browse/"
 	newBrowsePath = "/api/decap/v0/browse"
+	recapPath     = "/api/decap/v0/recap"
 	DefaultPort   = 4531
 	minAPI        = "v0.8"
 	nextAPI       = "v0.9"
@@ -44,6 +46,9 @@ func main() {
 
 	handler = handleHTTPMethod(http.HandlerFunc(browseHandler))
 	http.Handle(newBrowsePath, handler)
+
+	handler = handleHTTPMethod(http.HandlerFunc(recapHandler))
+	http.Handle(recapPath, handler)
 
 	handler = handleHTTPMethod(http.HandlerFunc(deprecationHandler))
 	for _, v := range deprecatedAPIs {
@@ -81,6 +86,46 @@ func oldVersionFmtBrowseHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	browseHandler(w, req)
+}
+
+func recapHandler(w http.ResponseWriter, req *http.Request) {
+
+	if req.Header.Get("Content-Type") != "application/json" {
+		status := http.StatusBadRequest
+		msg := fmt.Sprintf("%s: expected application/json", http.StatusText(status))
+		http.Error(w, msg, status)
+		return
+	}
+
+	var rec recap.Request
+	err := rec.ParseRequest(req.Body)
+	if err != nil {
+		status := http.StatusBadRequest
+		msg := fmt.Sprintf("%s: %s", http.StatusText(status), err)
+		http.Error(w, msg, status)
+		return
+	}
+
+	var res *recap.Result
+	// TODO: Execute Readability parsing here
+	err = nil
+	if err != nil {
+		msg := fmt.Sprintf("%s: %s", http.StatusText(http.StatusInternalServerError), err)
+		http.Error(w, msg, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		msg := fmt.Sprintf(
+			"%s: %s",
+			http.StatusText(http.StatusInternalServerError),
+			"Couldn't encode response",
+		)
+		http.Error(w, msg, http.StatusInternalServerError)
+	}
+	return
 }
 
 func browseHandler(w http.ResponseWriter, req *http.Request) {
