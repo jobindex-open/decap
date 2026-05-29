@@ -53,7 +53,6 @@ func (r *Request) Execute(debug bool) (*Result, error) {
 		HTML: dom.InnerHTML(parser.article.Node),
 		Metadata: map[string]any{
 			"byline":        parser.article.Byline,
-			"content":       parser.article.Content,
 			"excerpt":       parser.article.Excerpt,
 			"favicon":       parser.article.Favicon,
 			"image":         parser.article.Image,
@@ -62,7 +61,6 @@ func (r *Request) Execute(debug bool) (*Result, error) {
 			"modifiedtime":  parser.article.ModifiedTime,
 			"publishedtime": parser.article.PublishedTime,
 			"sitename":      parser.article.SiteName,
-			"textcontent":   parser.article.TextContent,
 			"title":         parser.article.Title,
 		},
 	}
