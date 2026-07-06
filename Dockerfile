@@ -10,6 +10,7 @@ RUN go mod download
 # copy sause
 COPY *.go ./
 COPY cmd ./cmd
+COPY recap ./recap
 
 # build
 RUN go build ./cmd/...
