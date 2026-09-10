@@ -151,6 +151,9 @@ var (
 		"breadcrumb", "filter-bar" /* removed overly-broad "modal" */, "dialog", "paywall",
 		"paywall-modal",
 
+		// Navigation
+		".*navigation.*", ".+[-_]nav", "nav",
+
 		// Cookie / consent / privacy widgets
 		"cookie-alert", "cookie[-_]?banner", "cookie[-_]?consent", "cookie[-_]?notice",
 		"cookie[-_]?preferences?", "cookie[-_]?settings?", "consent[-_]?banner",
