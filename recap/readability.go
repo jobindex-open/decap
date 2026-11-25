@@ -111,7 +111,7 @@ var headingAtoms = map[string]atom.Atom{
 
 func preprocessDocument(doc *html.Node) {
 	// Almost certainly trash nodes
-	for _, n := range dom.QuerySelectorAll(doc, "dialog,style,turbo-frame,nav") {
+	for _, n := range dom.QuerySelectorAll(doc, "dialog,style,turbo-frame,nav,fieldset") {
 		removeNode(n)
 	}
 	// May contain data we want, make it visible to readability
