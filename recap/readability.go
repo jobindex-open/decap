@@ -111,13 +111,21 @@ var headingAtoms = map[string]atom.Atom{
 
 func preprocessDocument(doc *html.Node) {
 	// Almost certainly trash nodes
-	for _, n := range dom.QuerySelectorAll(doc, "dialog,style,turbo-frame,nav") {
+	for _, n := range dom.QuerySelectorAll(doc, "dialog,style,turbo-frame,nav,fieldset") {
 		removeNode(n)
 	}
 	// May contain data we want, make it visible to readability
 	for _, n := range dom.QuerySelectorAll(doc, "object,embed,iframe") {
 		n.Data = "div"
 		n.DataAtom = atom.Div
+	}
+	// Readability drops every <aside>, but some sites use them as
+	// layout columns holding section headings.
+	for _, n := range dom.QuerySelectorAll(doc, "aside") {
+		if dom.QuerySelector(n, "h1,h2,h3,h4,h5,h6") != nil {
+			n.Data = "div"
+			n.DataAtom = atom.Div
+		}
 	}
 	// Some sites use h tags as classes instead of tags,
 	// meaning we dont score them properly.
